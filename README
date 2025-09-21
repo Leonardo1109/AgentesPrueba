@@ -1,0 +1,19 @@
+Para inicalizar el proyecto crear un entorno virtual en consola en la carpeta donde se tenga ya sea AgenteInundaciones1 o AgenteInundaciones2
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+(Aun no estoy seguro porque pero cada que cierro el programa hay que incializar de nuevo el entorno virtual)
+
+Descargar las librerias que se usan en cada uno de los programas usando: 
+
+pip install (la librerias que les falten)
+
+Despues poner a correr el documento python, para el caso del AgenteInundaciones2:
+
+python backend.py
+
+Una vez levantado el servicio ir a la ruta: http://localhost:8000/frontend 
+(Cambiar el puerto en caso de tener algun otro servicio levantando en ese puerto)
+
+(borren la carpeta .vent, la deje abierta y se comprimio xd)

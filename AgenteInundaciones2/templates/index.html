@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Riesgo de Inundaciones - CDMX</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #container {
+            display: flex;
+            height: 100vh;
+        }
+        #map {
+            flex: 2;
+            height: 100%;
+        }
+        #sidebar {
+            flex: 1;
+            padding: 20px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            max-width: 400px;
+        }
+        .resultado {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .riesgo-1 { border-left: 5px solid green; }
+        .riesgo-2 { border-left: 5px solid lightgreen; }
+        .riesgo-3 { border-left: 5px solid orange; }
+        .riesgo-4 { border-left: 5px solid red; }
+        .riesgo-5 { border-left: 5px solid darkred; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="map"></div>
+        <div id="sidebar">
+            <h2>Riesgo de Inundaciones CDMX</h2>
+            <p>Haz clic en cualquier punto del mapa para consultar el riesgo de inundación.</p>
+            
+            <div id="resultado" class="resultado">
+                <p>Selecciona una ubicación en el mapa...</p>
+            </div>
+            
+            <div id="estadisticas" class="resultado">
+                <h3>Estadísticas Generales</h3>
+                <p id="stats-loading">Cargando estadísticas...</p>
+            </div>
+            
+            <button onclick="centrarMapa()">Centrar en CDMX</button>
+            <button onclick="limpiarResultados()">Limpiar resultados</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let currentMarker = null;
+        const apiBaseUrl = 'http://localhost:8000';
+
+        // Inicializar mapa
+        async function initMap() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/mapa`);
+                const data = await response.json();
+                
+                map = L.map('map').setView([data.coordenadas.lat, data.coordenadas.lon], 12);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+                
+                // Manejar clics en el mapa
+                map.on('click', async function(e) {
+                    const { lat, lng } = e.latlng;
+                    await consultarRiesgo(lat, lng);
+                });
+                
+                // Cargar estadísticas
+                await cargarEstadisticas();
+                
+            } catch (error) {
+                console.error('Error inicializando mapa:', error);
+            }
+        }
+
+        // Consultar riesgo por coordenadas
+        async function consultarRiesgo(lat, lng) {
+            try {
+                // Limpiar marcador anterior
+                if (currentMarker) {
+                    map.removeLayer(currentMarker);
+                }
+                
+                // Añadir nuevo marcador
+                currentMarker = L.marker([lat, lng])
+                    .addTo(map)
+                    .bindPopup(`${lat.toFixed(6)}, ${lng.toFixed(6)}`)
+                    .openPopup();
+                
+                // Consultar API
+                const response = await fetch(`${apiBaseUrl}/consultar-riesgo`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ lat, lon: lng })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Error en la consulta');
+                }
+                
+                const data = await response.json();
+                mostrarResultado(data);
+                
+            } catch (error) {
+                console.error('Error consultando riesgo:', error);
+                document.getElementById('resultado').innerHTML = `
+                    <div class="resultado">
+                        <h3>Error</h3>
+                        <p>No se pudo obtener la información. Intenta de nuevo.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Mostrar resultados
+        function mostrarResultado(data) {
+            if (data.fuera_de_cdmx) {
+                // Mostrar mensaje especial para ubicaciones fuera de la CDMX
+                document.getElementById('resultado').innerHTML = `
+                    <div class="resultado">
+                        <h3>Fuera del área de cobertura</h3>
+                        <p><strong>Coordenadas:</strong> ${data.coordenadas.lat.toFixed(6)}, ${data.coordenadas.lon.toFixed(6)}</p>
+                        <p><strong>Estado:</strong>Fuera de la Ciudad de México</p>
+                        <p><strong>Distancia al área más cercana:</strong> ${data.distancia_km} km</p>
+                        <p><strong>Mensaje:</strong> ${data.descripcion}</p>
+                        <p><strong>Nota:</strong> ${data.interpretacion}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Código original para ubicaciones dentro de la CDMX
+            const riesgoClass = `riesgo-${data.nivel_riesgo}`;
+            document.getElementById('resultado').innerHTML = `
+                <div class="resultado ${riesgoClass}">
+                    <h3>Ubicación consultada</h3>
+                    <p><strong>Coordenadas:</strong> ${data.coordenadas.lat.toFixed(6)}, ${data.coordenadas.lon.toFixed(6)}</p>
+                    <p><strong>Alcaldía:</strong> ${data.alcaldia}</p>
+                    <p><strong>Nivel de riesgo:</strong> ${data.nivel_riesgo} - ${data.nivel_riesgo_texto}</p>
+                    <p><strong>Estado:</strong> ${data.dentro_zona ? 'Dentro de zona de riesgo' : `ℹ️ A ${data.distancia_km} km de zona de riesgo`}</p>
+                    <p><strong>Área de la zona:</strong> ${data.area_m2.toLocaleString()} m²</p>
+                    <p><strong>Interpretación:</strong> ${data.interpretacion}</p>
+                </div>
+            `;
+        }
+
+        // Cargar estadísticas
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/estadisticas`);
+                const data = await response.json();
+                
+                document.getElementById('stats-loading').outerHTML = `
+                    <p><strong>Total de polígonos:</strong> ${data.total_poligonos}</p>
+                    <p><strong>Alcaldías con datos:</strong> ${data.alcaldias}</p>
+                    <h4>Distribución de riesgo:</h4>
+                    <ul>
+                        <li>Nivel 1 (Muy Bajo): ${data.distribucion_riesgo['1'] || 0}</li>
+                        <li>Nivel 2 (Bajo): ${data.distribucion_riesgo['2'] || 0}</li>
+                        <li>Nivel 3 (Medio): ${data.distribucion_riesgo['3'] || 0}</li>
+                        <li>Nivel 4 (Alto): ${data.distribucion_riesgo['4'] || 0}</li>
+                        <li>Nivel 5 (Muy Alto): ${data.distribucion_riesgo['5'] || 0}</li>
+                    </ul>
+                `;
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Funciones auxiliares
+        function centrarMapa() {
+            map.setView([19.4326, -99.1332], 12);
+        }
+
+        function limpiarResultados() {
+            if (currentMarker) {
+                map.removeLayer(currentMarker);
+                currentMarker = null;
+            }
+            document.getElementById('resultado').innerHTML = '<p>Selecciona una ubicación en el mapa...</p>';
+        }
+
+        // Inicializar
+        initMap();
+    </script>
+</body>
+</html>
