@@ -17,3 +17,10 @@ Una vez levantado el servicio ir a la ruta: http://localhost:8000/frontend
 (Cambiar el puerto en caso de tener algun otro servicio levantando en ese puerto)
 
 (borren la carpeta .vent, la deje abierta y se comprimio xd)
+
+
+Instalaciones:
+pip install fastapi geopandas folium uvicorn
+
+
+Ingresen su api kei para tomorrow.io, se registran y la agregan en backend linea 29
