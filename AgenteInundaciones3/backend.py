@@ -28,7 +28,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Ingresen su api kei para tomorrow.io, se registran y la agregan
-TOMORROW_IO_API_KEY = ""
+TOMORROW_IO_API_KEY = "" 
 
 @app.get("/frontend")
 async def serve_frontend():
