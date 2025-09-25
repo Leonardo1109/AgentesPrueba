@@ -11,6 +11,8 @@ from fastapi.responses import FileResponse
 import requests
 import os
 from datetime import datetime, timedelta
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 app = FastAPI(title="API de Riesgo de Inundaciones CDMX")
 
@@ -80,7 +82,7 @@ def obtener_pronostico_lluvia(lat: float, lon: float) -> Dict[str, Any]:
         
         # Obtener pronóstico para las próximas 24 horas
         pronostico_24h = []
-        for hora in timeline[:120]:
+        for hora in timeline[:24]:
             timestamp = hora.get("time")
             valores = hora.get("values", {})
             probabilidad_lluvia = valores.get("precipitationProbability", 0)
@@ -89,7 +91,20 @@ def obtener_pronostico_lluvia(lat: float, lon: float) -> Dict[str, Any]:
             acumulado_lluvia = valores.get("rainAccumulation", 0)     # mm acumulados en esa hora
             temperatura = valores.get("temperature", 0)
             temperatura = valores.get("temperature", 0)
+
+            timestamp = hora.get("time")
+            dt_utc = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+            dt_local = dt_utc.astimezone(ZoneInfo("America/Mexico_City"))
             
+            pronostico_24h.append({
+                "hora": dt_local.strftime("%H:%M"),  # Ahora sí será 22:00, 23:00, etc.
+                "probabilidad_lluvia": probabilidad_lluvia,
+                "intensidad_lluvia": intensidad_lluvia,
+                "acumulado_lluvia": acumulado_lluvia,
+                "temperatura": temperatura
+            })
+            
+            '''
             pronostico_24h.append({
                 "hora": datetime.fromisoformat(timestamp.replace("Z", "+00:00")).strftime("%H:%M"),
                 "probabilidad_lluvia": probabilidad_lluvia,
@@ -97,6 +112,7 @@ def obtener_pronostico_lluvia(lat: float, lon: float) -> Dict[str, Any]:
                 "acumulado_lluvia": acumulado_lluvia,
                 "temperatura": temperatura
             })
+            '''
         
         # Calcular promedios y máximos para las próximas 24 horas
         if pronostico_24h:

@@ -24,3 +24,19 @@ pip install fastapi geopandas folium uvicorn
 
 
 Ingresen su api kei para tomorrow.io, se registran y la agregan en backend linea 29
+
+
+Para los datos de entrenamiento, hay que limpiar, ya los estoy limpiando, los 0311, 911, reportes agua son historicos
+
+
+|-------------------------------------------------------------------------------------|
+|----------------------------------------DATOS----------------------------------------|
+|-------------------------------------------------------------------------------------|
+
+Los datos se dividen en 3 tipos:
+
+Historicos: reportesAgua, 0311, 911, presencia_de_encharcamientos, 
+Atlas: atlas_riesgo_inundaciones, relieve, rios, atlas_riesgo_precipitaciones, convergencia_riegos_CDMX, sitios_recurrentes_de_encharcamiento, niveles_inundación_cobertura_áreas_verdes, red_hidrográfica_superficial
+Presentes: Api clima
+
+En donde usando los atlas (que son informacion que se considera que podrian influir en una inundacion), tomando en cuenta las probablidades de lluvia usando los datos presentes, tomamos como experiencia los historicos para poder intentar predecir nuevas inundaciones

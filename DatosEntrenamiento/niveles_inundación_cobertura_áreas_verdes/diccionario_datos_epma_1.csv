@@ -1,0 +1,27 @@
+Clave Subsistemas Nacional de Información,Subsistemas Nacionales de Información,"                                            Nombre de la base y/o conjunto de datos
+
+","                                                     Nombre de la tabla de la base de datos / hoja del conjunto de datos
+
+",Descripción de capa,Etiqueta del campo o variable ,Descripció de Campo,"Tipo de dato
+",Rango o valores que permite el campo,"Clasificación de la información
+","Especificaciones y/o reglas de cálculo
+ 
+","Obligatoriedad del campo
+ 
+","Registro de campos vacíos 
+ 
+","Tipo de archivo:
+"
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",ID,IDENTIFICADOR,Número entero ,Número consecutivo,Pública,,Obligatorio,Sin datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",cve_ent,CLAVE_ENTIDAD,Número entero ,"Clave de AGEE (Área Geoestadistica Estatal), de acuerdo al Marco Geoestadístico Nacional para la Ciudad de México",Pública,El código debe tener dos caracteres,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",alcaldia,ALCALDIA,Alfanumérico,"Nombre de AGEM (Área Geoestadistica Municipal), de acuerdo al Marco Geoestadístico Nacional para la Ciudad de México",Pública,,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",cve_col,CLAVE_COLONIA,Número entero ,Catálogo de Colonias Instituto Electoral (IECM),Pública,El código debe tener cinco caracteres,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",colonia,COLONIA,Alfanumérico,Catálogo de Colonias Instituto Electoral (IECM),Pública,,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",pob_2010,POBLACION_2010,Número entero ,8    a    31179,Pública,,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",SUP_COL_M2,SUPERFICIE_COLONIA_M2,Número decimales,1413.76   a    11857600,Pública,,Obligatorio,Con datos vacios,Shape file (.shp)
+03,Agua,epma_1,EPMA-1 Niveles de inundación y carencia de cobertura de áreas verdes,"Capa de información geoespacial con los Niveles de inundación y carencia de cobertura de áreas verdes (m2/hab), en Ciudad de México.",INUNDACION,NIVELE DE INUNDACION,Alfanumérico,"Muy Alto
+Alto
+Medio
+Bajo
+Muy bajo
+",Pública,,Obligatorio,Con datos vacios,Shape file (.shp)
